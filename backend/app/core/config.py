@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,6 +12,8 @@ class Settings(BaseSettings):
     debug: bool = False
     database_url: str = "postgresql+psycopg://app:app@localhost:5432/app"
     redis_url: str = "redis://localhost:6379/0"
+    # Idade mínima da conta GitHub para cadastro; 0 desativa a regra.
+    github_min_account_age_days: int = Field(default=7, ge=0)
 
 
 @lru_cache
