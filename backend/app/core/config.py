@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     app_name: str = "AI Classifier Platform"
     environment: str = "development"
     debug: bool = False
+    database_url: str = "postgresql+psycopg://app:app@localhost:5432/app"
+    redis_url: str = "redis://localhost:6379/0"
 
 
 @lru_cache

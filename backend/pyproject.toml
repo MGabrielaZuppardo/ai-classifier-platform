@@ -7,12 +7,17 @@ dependencies = [
     "fastapi>=0.115",
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
+    "psycopg[binary]>=3.2",
+    "redis>=5.0",
+    "sqlalchemy>=2.0",
     "uvicorn[standard]>=0.30",
 ]
 
 [project.optional-dependencies]
 dev = [
     "httpx>=0.27",
+    "mypy>=1.11",
+    "pre-commit>=3.8",
     "pytest>=8.2",
     "ruff>=0.6",
 ]
@@ -24,6 +29,11 @@ include = ["app*"]
 testpaths = ["tests"]
 pythonpath = ["."]
 markers = ["integration: exige serviços externos (PostgreSQL, Redis)"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["app"]
+strict = true
 
 [tool.ruff]
 line-length = 100
