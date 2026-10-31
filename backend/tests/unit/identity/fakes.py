@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
@@ -5,6 +6,7 @@ from fastapi import Request
 from starlette.responses import RedirectResponse, Response
 
 from app.modules.identity.application.login_with_github import GithubProfile
+from app.modules.identity.domain.refresh_token import RefreshToken
 from app.modules.identity.domain.user import OAuthIdentity, User
 from app.modules.identity.infrastructure.github_authlib import GithubOAuthError
 
@@ -41,6 +43,25 @@ class InMemoryUserRepository:
 
     def get_by_email(self, email: str) -> User | None:
         return next((u for u in self.users.values() if u.email == email), None)
+
+
+class InMemoryRefreshTokenRepository:
+    def __init__(self) -> None:
+        self.tokens: dict[UUID, RefreshToken] = {}
+
+    def add(self, token: RefreshToken) -> None:
+        self.tokens[token.id] = token
+
+    def get_by_hash(self, token_hash: str) -> RefreshToken | None:
+        return next((t for t in self.tokens.values() if t.token_hash == token_hash), None)
+
+    def mark_used(self, token_id: UUID, at: datetime) -> None:
+        self.tokens[token_id] = replace(self.tokens[token_id], used_at=at)
+
+    def revoke_family(self, family_id: UUID, at: datetime) -> None:
+        for token_id, token in list(self.tokens.items()):
+            if token.family_id == family_id and token.revoked_at is None:
+                self.tokens[token_id] = replace(token, revoked_at=at)
 
 
 class FakeGithubGateway:

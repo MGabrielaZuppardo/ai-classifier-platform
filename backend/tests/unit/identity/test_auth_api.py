@@ -8,9 +8,18 @@ from fastapi.testclient import TestClient
 
 from app.core.database import get_session
 from app.main import create_app
-from app.modules.identity.api.dependencies import get_github_gateway, get_user_repository
+from app.modules.identity.api.dependencies import (
+    get_github_gateway,
+    get_refresh_token_repository,
+    get_user_repository,
+)
 from app.modules.identity.application.login_with_github import GithubProfile
-from tests.unit.identity.fakes import FakeGithubGateway, InMemoryUserRepository, profile
+from tests.unit.identity.fakes import (
+    FakeGithubGateway,
+    InMemoryRefreshTokenRepository,
+    InMemoryUserRepository,
+    profile,
+)
 
 
 @pytest.fixture
@@ -19,14 +28,24 @@ def repo() -> InMemoryUserRepository:
 
 
 @pytest.fixture
+def refresh_repo() -> InMemoryRefreshTokenRepository:
+    return InMemoryRefreshTokenRepository()
+
+
+@pytest.fixture
 def gateway() -> FakeGithubGateway:
     return FakeGithubGateway()
 
 
 @pytest.fixture
-def client(repo: InMemoryUserRepository, gateway: FakeGithubGateway) -> Iterator[TestClient]:
+def client(
+    repo: InMemoryUserRepository,
+    refresh_repo: InMemoryRefreshTokenRepository,
+    gateway: FakeGithubGateway,
+) -> Iterator[TestClient]:
     app = create_app()
     app.dependency_overrides[get_user_repository] = lambda: repo
+    app.dependency_overrides[get_refresh_token_repository] = lambda: refresh_repo
     app.dependency_overrides[get_github_gateway] = lambda: gateway
     app.dependency_overrides[get_session] = lambda: MagicMock()
     yield TestClient(app, follow_redirects=False)

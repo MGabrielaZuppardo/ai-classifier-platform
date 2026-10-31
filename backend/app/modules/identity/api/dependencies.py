@@ -1,3 +1,4 @@
+from datetime import timedelta
 from functools import lru_cache
 from typing import Annotated, Protocol
 
@@ -9,12 +10,16 @@ from starlette.responses import Response
 from app.core.config import get_settings
 from app.core.database import get_session
 from app.modules.identity.application.login_with_github import GithubProfile, LoginWithGithub
-from app.modules.identity.application.ports import UserRepository
+from app.modules.identity.application.ports import RefreshTokenRepository, UserRepository
+from app.modules.identity.application.refresh_sessions import RefreshSessions
 from app.modules.identity.domain.user import User
 from app.modules.identity.infrastructure.github_authlib import AuthlibGithubGateway
 from app.modules.identity.infrastructure.jwt_tokens import (
     InvalidTokenError,
     JwtAccessTokenService,
+)
+from app.modules.identity.infrastructure.refresh_repository import (
+    SqlAlchemyRefreshTokenRepository,
 )
 from app.modules.identity.infrastructure.repository import SqlAlchemyUserRepository
 
@@ -49,10 +54,23 @@ def get_user_repository(session: Annotated[Session, Depends(get_session)]) -> Us
     return SqlAlchemyUserRepository(session)
 
 
+def get_refresh_token_repository(
+    session: Annotated[Session, Depends(get_session)],
+) -> RefreshTokenRepository:
+    return SqlAlchemyRefreshTokenRepository(session)
+
+
 def get_login_use_case(
     users: Annotated[UserRepository, Depends(get_user_repository)],
 ) -> LoginWithGithub:
     return LoginWithGithub(users, get_settings().github_min_account_age_days)
+
+
+def get_refresh_sessions(
+    tokens: Annotated[RefreshTokenRepository, Depends(get_refresh_token_repository)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+) -> RefreshSessions:
+    return RefreshSessions(tokens, users, timedelta(days=get_settings().refresh_token_ttl_days))
 
 
 def get_current_user(

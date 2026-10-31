@@ -6,11 +6,13 @@ from tests.integration.conftest import alembic_config
 
 pytestmark = pytest.mark.integration
 
+IDENTITY_TABLES = {"users", "oauth_identities", "refresh_tokens"}
+
 
 def test_upgrade_creates_identity_tables(engine: Engine):
     tables = set(inspect(engine).get_table_names())
 
-    assert {"users", "oauth_identities"} <= tables
+    assert IDENTITY_TABLES <= tables
 
 
 def test_migrations_match_the_models(engine: Engine):
@@ -29,8 +31,8 @@ def test_migrations_match_the_models(engine: Engine):
 def test_downgrade_removes_tables_and_upgrade_restores_them(engine: Engine):
     command.downgrade(alembic_config(), "base")
     try:
-        assert not {"users", "oauth_identities"} & set(inspect(engine).get_table_names())
+        assert not IDENTITY_TABLES & set(inspect(engine).get_table_names())
     finally:
         command.upgrade(alembic_config(), "head")
 
-    assert {"users", "oauth_identities"} <= set(inspect(engine).get_table_names())
+    assert IDENTITY_TABLES <= set(inspect(engine).get_table_names())

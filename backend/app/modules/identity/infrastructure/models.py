@@ -26,3 +26,16 @@ class OAuthIdentityModel(Base):
     provider: Mapped[str] = mapped_column(String(32))
     provider_user_id: Mapped[str] = mapped_column(String(64))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class RefreshTokenModel(Base):
+    __tablename__ = "refresh_tokens"
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    family_id: Mapped[UUID] = mapped_column(Uuid, index=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
