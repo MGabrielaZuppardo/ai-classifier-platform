@@ -58,3 +58,9 @@ class SqlAlchemyUserRepository:
         )
         model = self._session.execute(stmt).scalar_one_or_none()
         return _to_entity(model) if model else None
+
+    def get_by_email(self, email: str) -> User | None:
+        model = self._session.execute(
+            select(UserModel).where(UserModel.email == email)
+        ).scalar_one_or_none()
+        return _to_entity(model) if model else None
