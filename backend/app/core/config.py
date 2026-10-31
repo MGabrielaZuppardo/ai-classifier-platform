@@ -25,12 +25,15 @@ class Settings(BaseSettings):
     jwt_secret: SecretStr = SecretStr(INSECURE_DEV_SECRET)
     session_secret: SecretStr = SecretStr(INSECURE_DEV_SECRET)
     access_token_ttl_minutes: int = Field(default=15, gt=0)
+    refresh_token_ttl_days: int = Field(default=30, gt=0)
     cookie_secure: bool = False
 
     @model_validator(mode="after")
     def _require_real_secrets_outside_development(self) -> Self:
         if self.environment == "development":
             return self
+        if not self.cookie_secure:
+            raise ValueError("cookie_secure precisa ser verdadeiro fora de development")
         for name in ("jwt_secret", "session_secret"):
             value = getattr(self, name).get_secret_value()
             if value == INSECURE_DEV_SECRET or len(value) < MIN_SECRET_LENGTH:
