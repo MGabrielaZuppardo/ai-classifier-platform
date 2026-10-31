@@ -1,6 +1,11 @@
+from collections.abc import Iterator
+from functools import lru_cache
+
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+
+from app.core.config import get_settings
 
 # Nomes determinísticos de constraints, para o Alembic gerar migrações estáveis.
 NAMING_CONVENTION = {
@@ -22,3 +27,14 @@ def create_db_engine(database_url: str) -> Engine:
 
 def create_session_factory(engine: Engine) -> sessionmaker[Session]:
     return sessionmaker(engine, expire_on_commit=False)
+
+
+@lru_cache
+def _default_session_factory() -> sessionmaker[Session]:
+    return create_session_factory(create_db_engine(get_settings().database_url))
+
+
+def get_session() -> Iterator[Session]:
+    """Sessão por requisição. Quem altera dados chama `commit()` explicitamente."""
+    with _default_session_factory()() as session:
+        yield session
