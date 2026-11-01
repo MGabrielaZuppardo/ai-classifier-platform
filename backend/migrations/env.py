@@ -7,6 +7,7 @@ from app.core.config import get_settings
 from app.core.database import Base
 
 # Importar os modelos registra as tabelas em Base.metadata.
+from app.modules.datasets.infrastructure import models as _datasets_models  # noqa: F401
 from app.modules.identity.infrastructure import models as _identity_models  # noqa: F401
 
 config = context.config
