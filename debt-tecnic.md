@@ -43,7 +43,7 @@ Itens adiados de propósito para não travar o desenvolvimento. Cada item tem um
 
 ## DT-006: Validar o login com um GitHub real
 
-- **Status:** pendente
+- **Status:** resolvido em 2026-11-03 (desenvolvimento). Login real com OAuth App de dev, PKCE, escopos `read:user user:email`, usuário e identidade gravados e `/me`, refresh e logout verificados à mão. Falta repetir com um OAuth App próprio de staging antes da primeira entrega lá.
 - **Contexto:** o adaptador do Authlib só foi exercitado com um GitHub simulado. Falta registrar um OAuth App (um por ambiente, com a URL de retorno correta) e testar à mão o fluxo completo: autorização com PKCE, leitura do e-mail primário verificado e a regra de 7 dias.
 - **Gatilho:** antes da primeira entrega em staging.
 - **Critério de pronto:** login real funcionando em desenvolvimento e registrado como validado.
