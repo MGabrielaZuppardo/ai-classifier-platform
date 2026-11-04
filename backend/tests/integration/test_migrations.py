@@ -6,10 +6,10 @@ from tests.integration.conftest import alembic_config
 
 pytestmark = pytest.mark.integration
 
-IDENTITY_TABLES = {"users", "oauth_identities", "refresh_tokens"}
+IDENTITY_TABLES = {"users", "oauth_identities", "refresh_tokens", "datasets"}
 
 
-def test_upgrade_creates_identity_tables(engine: Engine):
+def test_upgrade_creates_tables(engine: Engine):
     tables = set(inspect(engine).get_table_names())
 
     assert IDENTITY_TABLES <= tables
@@ -20,6 +20,7 @@ def test_migrations_match_the_models(engine: Engine):
     from alembic.migration import MigrationContext
 
     from app.core.database import Base
+    from app.modules.datasets.infrastructure import models as _datasets  # noqa: F401
     from app.modules.identity.infrastructure import models  # noqa: F401
 
     with engine.connect() as connection:

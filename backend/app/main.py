@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.config import get_settings
+from app.modules.datasets.api.router import router as datasets_router
 from app.modules.identity.api.router import router as auth_router
 
 
@@ -17,6 +18,7 @@ def create_app() -> FastAPI:
         max_age=600,
     )
     app.include_router(auth_router)
+    app.include_router(datasets_router)
 
     @app.get("/health", tags=["infra"])
     def health() -> dict[str, str]:

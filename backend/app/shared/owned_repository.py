@@ -1,13 +1,15 @@
-from typing import Generic, Protocol, TypeVar
+from typing import Any, Generic, Protocol, TypeVar
 from uuid import UUID
 
 from sqlalchemy import select
-from sqlalchemy.orm import Mapped, Session
+from sqlalchemy.orm import Session
 
 
 class OwnedModel(Protocol):
-    id: Mapped[UUID]
-    owner_id: Mapped[UUID]
+    # `Any` porque numa instância do modelo SQLAlchemy o atributo é um UUID, enquanto na
+    # classe é um `Mapped[UUID]` (usado nas consultas); o Protocol precisa aceitar os dois.
+    id: Any
+    owner_id: Any
 
 
 T = TypeVar("T", bound=OwnedModel)
