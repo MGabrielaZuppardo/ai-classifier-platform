@@ -24,6 +24,24 @@ jobs:
       - run: mypy
       - run: pytest -m "not integration"
 
+  ml:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ml
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: ml/pyproject.toml
+      - run: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: pytest
+
   backend-integration:
     runs-on: ubuntu-24.04
     defaults:
