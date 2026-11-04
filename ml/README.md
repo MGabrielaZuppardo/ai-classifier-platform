@@ -27,3 +27,5 @@ pytest
 - `ml.config`: `TrainingConfig`, hiperparâmetros validados (limites do MVP) e serializáveis em JSON.
 - `ml.seed`: `set_seed`, fixa as fontes de aleatoriedade.
 - `ml.environment`: `resolve_device` e `collect_environment` (versões e GPU, para registrar com cada experimento).
+- `ml.data.split`: `stratified_split`, `predefined_test_split` e `SplitManifest` (índices por partição, seed, razões e `fingerprint` SHA-256, serializável em JSON).
+- `ml.data.cifar10`: `load_cifar10` (treino + teste oficiais como um só dataset, teste oficial isolado) e `partitions`.
