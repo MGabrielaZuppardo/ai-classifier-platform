@@ -223,3 +223,7 @@ __marimo__/
 CLAUDE.md
 .design-canvas
 .claude
+
+# Datasets baixados e artefatos de treino (ml/)
+ml/data/
+ml/runs/
