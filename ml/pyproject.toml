@@ -3,7 +3,9 @@ name = "ai-classifier-ml"
 version = "0.1.0"
 description = "Pipeline de treino e avaliação (PyTorch), independente da API"
 requires-python = ">=3.11"
-dependencies = []  # torch/torchvision serão adicionados na Fase 3 (a variante CPU/CUDA depende do ambiente)
+# torch e torchvision ficam fora de propósito: a variante (CUDA local, CPU no CI) é escolhida
+# na instalação. Ver ml/README.md.
+dependencies = ["numpy>=1.26"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.2", "ruff>=0.6"]
